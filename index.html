@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Shehan Bandara - Sri Lanka's #1 History Educator. Master the past with logical, visual history education.">
+    <meta name="theme-color" content="#050505">
+    <title>SHEHAN BANDARA | නින්ද නොයන ඉතිහාසය</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Noto+Sans+Sinhala:wght@300;400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --brand-yellow: #facc15;
+            --text-gray: #a1a1aa;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { scrollbar-width: thin; scrollbar-color: #facc15 #0a0a0a; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #facc15; border-radius: 99px; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Sinhala', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .serif { font-family: 'Playfair Display', serif; }
+        .reveal { opacity: 0; transform: translateY(30px); }
+
+        .cursor-dot, .cursor-ring {
+            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10000;
+            border-radius: 50%; display: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background: var(--brand-yellow); }
+        .cursor-ring {
+            width: 40px; height: 40px; border: 1.5px solid rgba(250, 204, 21, 0.7);
+            transition: width 0.3s ease, height 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+        }
+        .cursor-ring.is-hover {
+            width: 48px; height: 48px;
+            background: rgba(250, 204, 21, 0.08); border-color: rgba(250, 204, 21, 0.2);
+        }
+        @media (pointer: fine) { .cursor-dot, .cursor-ring { display: block; } }
+
+        #grain {
+            position: fixed; inset: 0; z-index: 9000; pointer-events: none; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        #progress-bar {
+            position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+            background: linear-gradient(90deg, #facc15, #fde047);
+            transform-origin: 0 50%; transform: scaleX(0); z-index: 9500;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.6);
+            pointer-events: none;
+        }
+
+        #side-dots {
+            position: fixed; right: 2rem; top: 50%; transform: translateY(-50%);
+            z-index: 800; display: none; flex-direction: column; gap: 14px;
+        }
+        @media (min-width: 1024px) { #side-dots { display: flex; } }
+        .side-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.3); cursor: pointer; transition: all 0.35s ease; position: relative; }
+        .side-dot:hover { border-color: var(--brand-yellow); }
+        .side-dot.active { background: var(--brand-yellow); border-color: var(--brand-yellow); box-shadow: 0 0 12px rgba(250,204,21,0.7); transform: scale(1.3); }
+
+        #back-top {
+            position: fixed; bottom: 30px; right: 30px; z-index: 900;
+            width: 52px; height: 52px; border-radius: 50%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(10px);
+            border: 1px solid rgba(250,204,21,0.4); color: var(--brand-yellow);
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            opacity: 0; pointer-events: none; transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease, background 0.3s ease;
+        }
+        #back-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        #back-top:hover { background: var(--brand-yellow); color: #000; }
+        #back-top svg { transition: transform 0.3s ease; }
+        #back-top:hover svg { transform: translateY(-3px); }
+        #back-top::before {
+            content: ''; position: absolute; inset: -6px; border-radius: 50%;
+            border: 1px dashed rgba(250, 204, 21, 0.5);
+            animation: spin-slow 12s linear infinite;
+        }
+        @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+        #hero-badge { animation: badge-glow 3.2s ease-in-out infinite; }
+        @keyframes badge-glow {
+            0%, 100% { box-shadow: 0 0 0 rgba(250, 204, 21, 0); }
+            50% { box-shadow: 0 0 28px rgba(250, 204, 21, 0.35); }
+        }
+
+        .shiny-gold {
+            background: linear-gradient(110deg, #facc15 40%, #fffbe6 50%, #facc15 60%);
+            background-size: 250% auto;
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gold-shine 4s linear infinite;
+        }
+        @keyframes gold-shine {
+            from { background-position: 200% center; }
+            to { background-position: -200% center; }
+        }
+
+        .marquee-band .marquee-inner { animation: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            #hero-badge, .scroll-line::after, .glow-orb, #back-top::before, .shiny-gold, .marquee-inner { animation: none !important; }
+        }
+
+        .timeline-item, .glass-card { transition: border-color 0.5s ease, box-shadow 0.5s ease; border: 1px solid rgba(255,255,255,0.05); }
+        .timeline-item:hover, .glass-card:hover {
+            border-color: var(--brand-yellow) !important;
+            box-shadow: 0 0 40px rgba(250, 204, 21, 0.2);
+        }
+
+        .tilt-wrap { perspective: 1000px; }
+        .tilt-card { transform-style: preserve-3d; will-change: transform; transition: transform 0.15s ease-out; }
+        .tilt-glare {
+            position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+            background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(250,204,21,0.15), transparent 60%);
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .tilt-wrap:hover .tilt-glare { opacity: 1; }
+
+        .staggered-menu-header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 2rem 4rem; background: transparent; pointer-events: none; z-index: 600;
+        }
+        @media (max-width: 640px) { .staggered-menu-header { padding: 1.5rem; } }
+        .staggered-menu-header > * { pointer-events: auto; }
+        .sm-logo { display: flex; align-items: center; user-select: none; }
+        .sm-toggle {
+            position: relative; display: inline-flex; align-items: center; gap: 0.5rem;
+            background: transparent; border: none; cursor: pointer; color: #fff;
+            font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em;
+            line-height: 1; overflow: visible;
+        }
+        .sm-toggle:focus-visible { outline: 2px solid rgba(250,204,21,0.6); outline-offset: 4px; border-radius: 4px; }
+        .sm-toggle-textWrap { position: relative; display: inline-block; height: 1em; overflow: hidden; white-space: nowrap; }
+        .sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1; }
+        .sm-toggle-line { display: block; height: 1em; line-height: 1; }
+        .sm-icon {
+            position: relative; width: 14px; height: 14px; flex: 0 0 14px;
+            display: inline-flex; align-items: center; justify-content: center; will-change: transform;
+        }
+        .sm-icon-line {
+            position: absolute; left: 50%; top: 50%; width: 100%; height: 2px;
+            background: currentColor; border-radius: 2px; transform: translate(-50%, -50%); will-change: transform;
+        }
+        .sm-icon-line-v { transform: translate(-50%, -50%) rotate(90deg); }
+
+        .sm-prelayers {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: clamp(320px, 38vw, 480px); pointer-events: none; z-index: 500;
+        }
+        .sm-prelayer { position: absolute; top: 0; right: 0; height: 100%; width: 100%; will-change: transform; }
+
+        .staggered-menu-panel {
+            position: fixed; top: 0; right: 0; width: clamp(320px, 38vw, 480px); height: 100%;
+            background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            display: flex; flex-direction: column; padding: 7rem 3.5rem 2.5rem;
+            overflow-y: auto; z-index: 520; will-change: transform;
+            border-left: 1px solid rgba(255,255,255,0.08);
+        }
+        @media (max-width: 1024px) { .staggered-menu-panel, .sm-prelayers { width: 100%; } }
+        @media (max-width: 640px) { .staggered-menu-panel { padding: 6rem 2rem 2rem; } }
+        .sm-panel-inner { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
+        .sm-panel-list { list-style: none; margin: 1.5rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; counter-reset: smItem; }
+        .sm-panel-itemWrap { position: relative; overflow: hidden; line-height: 1.05; }
+        .sm-panel-item {
+            position: relative; color: #fff; font-weight: 900;
+            font-size: clamp(2.4rem, 5vw, 3.5rem); letter-spacing: -2px; text-transform: uppercase;
+            text-decoration: none; display: inline-block; padding-right: 1.6em;
+            transition: color 0.25s ease;
+        }
+        .sm-panel-item:hover { color: var(--brand-yellow); }
+        .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
+        .sm-panel-list[data-numbering] .sm-panel-item::after {
+            counter-increment: smItem;
+            content: counter(smItem, decimal-leading-zero);
+            position: absolute; top: 0.15em; right: 0.2em;
+            font-size: 15px; font-weight: 700; letter-spacing: 0.1em;
+            color: var(--brand-yellow); pointer-events: none; user-select: none;
+            opacity: var(--sm-num-opacity, 0);
+        }
+        .sm-socials {
+            margin-top: auto; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex; flex-direction: column; gap: 0.75rem;
+        }
+        .sm-socials-title {
+            margin: 0; font-size: 0.7rem; font-weight: 800; color: var(--brand-yellow);
+            text-transform: uppercase; letter-spacing: 0.3em;
+        }
+        .sm-socials-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: row; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+        .sm-socials-link {
+            font-size: 1.05rem; font-weight: 600; color: #e5e5e5; text-decoration: none;
+            position: relative; padding: 2px 0; display: inline-block;
+            transition: color 0.3s ease, opacity 0.3s ease;
+        }
+        .sm-socials-list:hover .sm-socials-link:not(:hover) { opacity: 0.35; }
+        .sm-socials-link:hover { color: var(--brand-yellow); }
+
+        .hero-split { display: grid; grid-template-columns: 1.2fr 0.8fr; min-height: 100vh; }
+        @media (max-width: 1024px) { .hero-split { grid-template-columns: 1fr; } }
+        #embers { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+
+        .scroll-indicator {
+            position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 10;
+        }
+        .scroll-line { width: 1px; height: 60px; background: rgba(255,255,255,0.15); overflow: hidden; position: relative; }
+        .scroll-line::after {
+            content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--brand-yellow));
+            animation: scroll-drop 2s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+        }
+        @keyframes scroll-drop { 0% { top: -100%; } 60%, 100% { top: 100%; } }
+
+        .marquee-band {
+            overflow: hidden; white-space: nowrap; display: flex;
+            background: var(--brand-yellow); transform: rotate(-1.5deg) scale(1.02);
+            padding: 1.1rem 0; position: relative; z-index: 20;
+            box-shadow: 0 10px 60px rgba(250,204,21,0.25);
+        }
+        .marquee-inner {
+            display: inline-flex; align-items: center; gap: 3rem; padding-right: 3rem;
+            animation: marquee-x 26s linear infinite; flex-shrink: 0;
+        }
+        .marquee-band:hover .marquee-inner { animation-play-state: paused; }
+        @keyframes marquee-x { to { transform: translateX(-100%); } }
+        .marquee-item { font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: #000; font-size: 0.95rem; }
+
+        .marquee-outline {
+            overflow: hidden; white-space: nowrap; display: flex; padding: 2rem 0;
+        }
+        .marquee-outline .marquee-inner { animation-direction: reverse; animation-duration: 38s; }
+        .outline-text {
+            font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700;
+            font-size: clamp(3rem, 8vw, 7rem); color: transparent;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.18); line-height: 1;
+        }
+
+        .timeline-section { position: relative; }
+        .timeline-wrap { overflow: hidden; }
+        @media (max-width: 767px) { .timeline-wrap { overflow-x: auto; scrollbar-width: none; } .timeline-wrap::-webkit-scrollbar { display: none; } }
+        .timeline-track { display: flex; gap: 2rem; padding: 3rem 8vw 4rem; width: max-content; }
+        .timeline-item {
+            min-width: 340px; padding: 2rem; border-radius: 24px; background: rgba(255,255,255,0.02);
+            position: relative; overflow: hidden;
+        }
+        @media (max-width: 640px) { .timeline-item { min-width: 280px; } }
+        .timeline-img { width: 100%; height: 220px; object-fit: cover; border-radius: 16px; margin-bottom: 1.5rem; filter: grayscale(1); transition: 0.6s ease; }
+        .timeline-item:hover .timeline-img { filter: grayscale(0); transform: scale(1.05); }
+        .ghost-num {
+            position: absolute; top: 0.5rem; right: 1.5rem; font-size: 6rem; font-weight: 900;
+            color: rgba(255,255,255,0.03); line-height: 1; pointer-events: none; font-family: 'Playfair Display', serif;
+        }
+        .timeline-progress {
+            height: 2px; background: rgba(255,255,255,0.08); margin: 0 8vw; border-radius: 99px; overflow: hidden;
+        }
+        .timeline-progress i { display: block; height: 100%; background: var(--brand-yellow); transform-origin: 0 50%; transform: scaleX(0); box-shadow: 0 0 12px rgba(250,204,21,0.8); }
+
+        .glow-orb {
+            position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none;
+            background: radial-gradient(circle, rgba(250,204,21,0.12), transparent 70%);
+            animation: orb-float 11s ease-in-out infinite alternate;
+        }
+        @keyframes orb-float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(60px, -50px) scale(1.25); }
+        }
+
+        .word { display: inline-block; will-change: transform, opacity, filter; }
+
+        .img-reveal { clip-path: inset(0 0 100% 0); will-change: clip-path; }
+        .img-reveal img { transform: scale(1.25); will-change: transform; }
+
+        .faq-item { border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .faq-question { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 2rem 0; font-weight: 700; gap: 1rem; user-select: none; }
+        .faq-icon {
+            flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+            border: 1px solid rgba(250,204,21,0.4); display: flex; align-items: center; justify-content: center;
+            color: var(--brand-yellow); transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1), background 0.3s, color 0.3s;
+        }
+        .faq-item.active .faq-icon { transform: rotate(45deg); background: var(--brand-yellow); color: #000; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.76, 0, 0.24, 1), padding 0.5s ease; color: var(--text-gray); }
+        .faq-item.active .faq-answer { max-height: 300px; padding-bottom: 2rem; }
+
+        .gradual-blur { position: absolute; bottom: 0; left: 0; width: 100%; height: 15rem; pointer-events: none; z-index: 5; }
+
+        .btn-brand {
+            background: var(--brand-yellow); color: #000; padding: 1.2rem 3.5rem; border-radius: 99px;
+            font-weight: 800; text-transform: uppercase; font-size: 0.8rem; display: inline-block;
+            transition: box-shadow 0.3s ease; position: relative; will-change: transform;
+        }
+        .btn-brand:hover { box-shadow: 0 0 50px rgba(250, 204, 21, 0.45); }
+        .shiny-text {
+            display: inline-block;
+            background: linear-gradient(120deg, #000 0%, #000 35%, #fff 50%, #000 65%, #000 100%);
+            background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite;
+        }
+        .shiny-text:hover { animation-play-state: paused; }
+        .shiny-text-light {
+            display: inline-block;
+            background: linear-gradient(120deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.85) 35%, var(--brand-yellow) 50%, rgba(255,255,255,0.85) 65%, rgba(255,255,255,0.85) 100%);
+            background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite;
+        }
+        .shiny-text-light:hover { animation-play-state: paused; }
+        @keyframes shine { 0% { background-position: 150% center; } 100% { background-position: -50% center; } }
+
+        .fold-text-piece {
+            position: relative; display: inline-block; transform-style: preserve-3d;
+            backface-visibility: hidden; will-change: transform, opacity;
+            transition: transform 0.3s ease;
+        }
+        .fold-text-piece:hover { transform: translateY(-6%) !important; }
+        .fold-text-piece::after {
+            content: ''; position: absolute; inset: -0.1em; pointer-events: none;
+            opacity: var(--fold-crease, 0);
+            background: linear-gradient(180deg, rgba(0,0,0,0.6), transparent);
+        }
+
+        .badge-scramble { cursor: default; }
+    </style>
+</head>
+<body class="selection:bg-yellow-400 selection:text-black">
+    <div id="grain"></div>
+    <div id="progress-bar"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+
+    <nav id="side-dots">
+        <a class="side-dot active" href="#home" aria-label="Home"></a>
+        <a class="side-dot" href="#timeline" aria-label="Timeline"></a>
+        <a class="side-dot" href="#stats" aria-label="Stats"></a>
+        <a class="side-dot" href="#curriculum" aria-label="Curriculum"></a>
+        <a class="side-dot" href="#about" aria-label="About"></a>
+        <a class="side-dot" href="#faq" aria-label="FAQ"></a>
+    </nav>
+
+    <button id="back-top" aria-label="Back to top">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    </button>
+
+    <header class="staggered-menu-header">
+        <div class="sm-logo">
+            <span class="text-xl font-black serif uppercase tracking-widest">Shehan <span class="text-yellow-400">Bandara</span></span>
+        </div>
+        <button class="sm-toggle" id="menu-trigger" aria-label="Open menu" aria-expanded="false" aria-controls="staggered-menu-panel" type="button">
+            <span class="sm-toggle-textWrap" aria-hidden="true">
+                <span class="sm-toggle-textInner" id="btn-text-inner"><span class="sm-toggle-line">Menu</span></span>
+            </span>
+            <span class="sm-icon" id="btn-icon" aria-hidden="true">
+                <span class="sm-icon-line"></span>
+                <span class="sm-icon-line sm-icon-line-v" id="btn-plus-v"></span>
+            </span>
+        </button>
+    </header>
+
+    <div class="sm-prelayers" aria-hidden="true">
+        <div class="sm-prelayer" style="background: #facc15;"></div>
+        <div class="sm-prelayer" style="background: #26220a;"></div>
+    </div>
+
+    <aside id="staggered-menu-panel" class="staggered-menu-panel" aria-hidden="true">
+        <div class="sm-panel-inner">
+            <ul class="sm-panel-list" role="list" data-numbering>
+                <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="#home" aria-label="Go to home"><span class="sm-panel-itemLabel">Home</span></a></li>
+                <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="#about" aria-label="Learn about Shehan Bandara"><span class="sm-panel-itemLabel">About</span></a></li>
+                <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="#curriculum" aria-label="View curriculum"><span class="sm-panel-itemLabel">Curriculum</span></a></li>
+                <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="#stats" aria-label="View results"><span class="sm-panel-itemLabel">Results</span></a></li>
+                <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="#faq" aria-label="Read frequently asked questions"><span class="sm-panel-itemLabel">FAQ</span></a></li>
+            </ul>
+            <div class="sm-socials" aria-label="Social links">
+                <h3 class="sm-socials-title">Socials</h3>
+                <ul class="sm-socials-list" role="list">
+                    <li><a href="https://whatsapp.com/channel/0029VatXwt51NCrSgGvJ421s" target="_blank" rel="noopener noreferrer" class="sm-socials-link">WhatsApp Channel</a></li>
+                    <li><a href="https://www.facebook.com/malinda.shehan.520/" target="_blank" rel="noopener noreferrer" class="sm-socials-link">Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <main id="site-wrapper">
+        <section id="home" class="hero-split relative overflow-hidden">
+            <canvas id="embers"></canvas>
+            <div class="flex flex-col justify-center px-8 lg:px-24 pt-40 pb-20 order-2 lg:order-1 relative z-10 hero-left">
+                <div class="reveal">
+                    <span class="badge-scramble inline-block py-1 px-3 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 text-[10px] font-bold tracking-widest uppercase mb-8" id="hero-badge">
+                        Sri Lanka's #1 History Educator
+                    </span>
+                    <h1 class="text-6xl md:text-[8.5rem] font-extrabold leading-[0.85] tracking-tighter mb-10">
+                        <span class="js-fold-text block" data-text="Master">Master</span>
+                        <span class="serif italic text-yellow-400 js-fold-text block" data-text="The Past.">The Past.</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-white/50 font-light max-w-xl mb-16 leading-relaxed js-hero-words">
+                        විෂය නිර්දේශයට එහා ගිය, තාර්කික බුද්ධියෙන් ඉතිහාසය විමසා බලන ශ්‍රී ලංකාවේ එකම ඉතිහාස පන්තිය.
+                    </p>
+                    <div class="flex flex-wrap gap-6 hero-btns">
+                        <a href="#faq" class="btn-brand magnetic"><span class="shiny-text">Join Today</span></a>
+                        <a href="#curriculum" class="magnetic px-10 py-4 border border-white/20 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-white/5 transition"><span class="shiny-text-light">Curriculum</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="relative order-1 lg:order-2 bg-neutral-900 overflow-hidden" id="hero-img-container">
+                <img src="portrait.jpg" alt="Ancient Heritage" class="w-full h-full object-cover sepia-[0.2] scale-110" id="hero-parallax-img">
+                <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent hidden lg:block"></div>
+                <div class="gradual-blur" id="hero-blur"></div>
+            </div>
+            <div class="scroll-indicator" id="scroll-indicator">
+                <span class="text-[9px] font-bold uppercase tracking-[0.4em] text-white/40">Scroll</span>
+                <div class="scroll-line"></div>
+            </div>
+        </section>
+
+        <div class="marquee-band" aria-hidden="true">
+            <div class="marquee-inner">
+                <span class="marquee-item">Anuradhapura ✦ Polonnaruwa ✦ Kandy ✦ Sigiriya ✦ 2500 Years of History ✦ Master The Past ✦</span>
+                <span class="marquee-item">Anuradhapura ✦ Polonnaruwa ✦ Kandy ✦ Sigiriya ✦ 2500 Years of History ✦ Master The Past ✦</span>
+            </div>
+            <div class="marquee-inner">
+                <span class="marquee-item">Anuradhapura ✦ Polonnaruwa ✦ Kandy ✦ Sigiriya ✦ 2500 Years of History ✦ Master The Past ✦</span>
+                <span class="marquee-item">Anuradhapura ✦ Polonnaruwa ✦ Kandy ✦ Sigiriya ✦ 2500 Years of History ✦ Master The Past ✦</span>
+            </div>
+        </div>
+
+        <section id="timeline" class="timeline-section py-24 lg:py-0 lg:min-h-screen flex flex-col justify-center bg-[#0a0a0a]">
+            <div class="max-w-[1400px] mx-auto w-full px-8 pt-16">
+                <h2 class="text-5xl md:text-7xl font-bold serif italic">
+                    <span class="js-fold-text block" data-text="Historical">Historical</span>
+                    <span class="js-fold-text block text-yellow-400" data-text="Timeline.">Timeline.</span>
+                </h2>
+            </div>
+            <div class="timeline-wrap">
+                <div class="timeline-track">
+                    <div class="timeline-item tilt-wrap" data-hover>
+                        <div class="tilt-card relative h-full">
+                            <span class="ghost-num">01</span>
+                            <img src="era_anuradhapura.jpg" class="timeline-img" alt="Anuradhapura">
+                            <span class="text-yellow-400 font-bold text-xs mb-4 block">ERA 01 — 377 BC → 1017 AD</span>
+                            <h4 class="text-2xl font-bold mb-4">Anuradhapura</h4>
+                            <p class="text-white/40 text-sm js-scroll-reveal-h">The dawn of civilization and the golden age of irrigation and Buddhism.</p>
+                            <div class="tilt-glare"></div>
+                        </div>
+                    </div>
+                    <div class="timeline-item tilt-wrap" data-hover>
+                        <div class="tilt-card relative h-full">
+                            <span class="ghost-num">02</span>
+                            <img src="era_polonnaruwa.jpg" class="timeline-img" alt="Polonnaruwa">
+                            <span class="text-yellow-400 font-bold text-xs mb-4 block">ERA 02 — 1017 → 1235 AD</span>
+                            <h4 class="text-2xl font-bold mb-4">Polonnaruwa</h4>
+                            <p class="text-white/40 text-sm js-scroll-reveal-h">Strategic shifts and the rise of Parakramabahu the Great.</p>
+                            <div class="tilt-glare"></div>
+                        </div>
+                    </div>
+                    <div class="timeline-item tilt-wrap" data-hover>
+                        <div class="tilt-card relative h-full">
+                            <span class="ghost-num">03</span>
+                            <img src="era_kandy.jpg" class="timeline-img" alt="Kandy">
+                            <span class="text-yellow-400 font-bold text-xs mb-4 block">ERA 03 — 1469 → 1815 AD</span>
+                            <h4 class="text-2xl font-bold mb-4">Kandy</h4>
+                            <p class="text-white/40 text-sm js-scroll-reveal-h">The last stronghold of Sri Lankan sovereignty against colonial powers.</p>
+                            <div class="tilt-glare"></div>
+                        </div>
+                    </div>
+                    <div class="timeline-item tilt-wrap" data-hover>
+                        <div class="tilt-card relative h-full">
+                            <span class="ghost-num">04</span>
+                            <img src="era_colonial.jpg" class="timeline-img" alt="Colonial">
+                            <span class="text-yellow-400 font-bold text-xs mb-4 block">ERA 04 — 1505 → 1948 AD</span>
+                            <h4 class="text-2xl font-bold mb-4">Colonialism</h4>
+                            <p class="text-white/40 text-sm js-scroll-reveal-h">Resistance movements and the impact of Portuguese, Dutch, and British rule.</p>
+                            <div class="tilt-glare"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-progress hidden md:block"><i id="timeline-bar"></i></div>
+        </section>
+
+        <section id="stats" class="py-40 px-8 relative overflow-hidden">
+            <div class="glow-orb w-[500px] h-[500px] top-[-150px] left-[-150px]"></div>
+            <div class="glow-orb w-[400px] h-[400px] bottom-[-100px] right-[-100px]" style="animation-delay: -5s;"></div>
+            <div class="max-w-[1400px] mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12 text-center border-y border-white/5 py-32 relative z-10">
+                <div class="reveal">
+                    <div class="text-6xl md:text-[8rem] font-black serif italic shiny-gold mb-4 js-count-up" data-value="3500" data-suffix="+">0</div>
+                    <p class="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40 js-scroll-reveal">Total Alumni</p>
+                </div>
+                <div class="reveal">
+                    <div class="text-6xl md:text-[8rem] font-black serif italic shiny-gold mb-4 js-count-up" data-value="99" data-suffix="%">0</div>
+                    <p class="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40 js-scroll-reveal">Success Rate</p>
+                </div>
+                <div class="reveal">
+                    <div class="text-6xl md:text-[8rem] font-black serif italic shiny-gold mb-4 js-count-up" data-value="12" data-suffix="yr+">0</div>
+                    <p class="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40 js-scroll-reveal">Legacy</p>
+                </div>
+                <div class="reveal">
+                    <div class="text-6xl md:text-[8rem] font-black serif italic shiny-gold mb-4">A+</div>
+                    <p class="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40 js-scroll-reveal">Average Grade</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="curriculum" class="py-40 px-8">
+            <div class="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-24 items-center">
+                <div class="reveal order-2 lg:order-1">
+                    <h2 class="text-5xl md:text-7xl font-bold mb-10 leading-tight">
+                        <span class="js-fold-text block" data-text="Artistic">Artistic</span>
+                        <span class="serif italic text-yellow-400 js-fold-text block" data-text="Dedication.">Dedication.</span>
+                    </h2>
+                    <p class="text-xl text-white/60 mb-12 leading-relaxed js-scroll-reveal">
+                        ඉතිහාසය යනු හුදෙක් කරුණු පාඩම් කිරීමක් නොව, එය වටහා ගත යුතු කලාවකි. අපගේ පන්තිය තුළදී සිතියම්, චිත්‍ර සහ තාර්කික සටහන් හරහා විෂය කරුණු සිසුන්ගේ මතකයේ සදාකාලිකව රැඳෙන ලෙස උගන්වනු ලබයි.
+                    </p>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div class="glass-card tilt-wrap p-8 rounded-3xl" data-hover>
+                            <div class="tilt-card">
+                                <img src="historical_artifacts.jpg" alt="Artifacts" class="w-full h-32 object-cover rounded-xl mb-6">
+                                <div class="text-yellow-400 font-bold mb-2 uppercase text-xs">Technique</div>
+                                <div class="text-xs text-white/40">Visual Mapping</div>
+                                <div class="tilt-glare rounded-3xl"></div>
+                            </div>
+                        </div>
+                        <div class="glass-card tilt-wrap p-8 rounded-3xl" data-hover>
+                            <div class="tilt-card">
+                                <img src="historical_statue.jpg" alt="Statues" class="w-full h-32 object-cover rounded-xl mb-6">
+                                <div class="text-yellow-400 font-bold mb-2 uppercase text-xs">Support</div>
+                                <div class="text-xs text-white/40">Digital Portal</div>
+                                <div class="tilt-glare rounded-3xl"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal order-1 lg:order-2">
+                    <div class="relative group img-reveal" data-hover>
+                        <img src="sketch.jpg" alt="Sketch" class="rounded-[40px] border border-white/10 w-full h-auto shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-40 px-8 bg-[#050505] relative overflow-hidden">
+            <div class="glow-orb w-[450px] h-[450px] top-[20%] right-[-150px]" style="animation-delay: -3s;"></div>
+            <div class="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-32 items-center relative z-10">
+                <div class="reveal">
+                    <div class="relative img-reveal" data-hover>
+                        <img src="portrait.jpg" alt="Portrait" class="rounded-3xl shadow-2xl grayscale hover:grayscale-0 transition-all duration-1000 w-full">
+                    </div>
+                </div>
+                <div class="reveal">
+                    <span class="text-yellow-400 text-xs font-bold tracking-[0.5em] uppercase mb-8 block">The Mastermind</span>
+                    <h2 class="text-6xl font-black tracking-tighter mb-10 serif italic">
+                        <span class="js-fold-text block" data-text="Shehan">Shehan</span>
+                        <span class="js-fold-text block text-yellow-400" data-text="Bandara">Bandara</span>
+                    </h2>
+                    <div class="space-y-8 text-xl text-white/60 font-light leading-relaxed js-scroll-reveal">
+                        <p class="serif italic text-3xl text-white border-l-4 border-yellow-400 pl-8">"අතීතය අපට උගන්වන්නේ වර්තමානය නිවැරදිව ජීවත් වීමට සහ අනාගතය සාර්ථකව ගොඩනගා ගැනීමටයි."</p>
+                        <p>ශ්‍රී ලංකාවේ ප්‍රමුඛතම අධ්‍යාපනවේදියෙකු ලෙස, ශෙහාන් බණ්ඩාර සිසුන්ගේ චින්තන ශක්තිය වර්ධනය කරමින් ඉතිහාසය විෂය සඳහා නව්‍ය අර්ථකථනයක් ලබා දෙයි. ඔහුගේ මෙහෙයවීමෙන් වසරක් පාසා බිහිවන සිසුන් දහස් ගණනක් අද දින විශිෂ්ටතම ප්‍රතිඵල අත්කර ගනී.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="py-40 px-8">
+            <div class="max-w-[900px] mx-auto">
+                <h2 class="text-5xl md:text-7xl font-bold serif italic mb-20 text-center">
+                    <span class="js-fold-text block" data-text="Questions?">Questions?</span>
+                </h2>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>නව සිසුවෙකු ලෙස පන්තියට එකතු වන්නේ කෙසේද?</span>
+                        <span class="faq-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer"><p>පහත Facebook පිටුවට හෝ WhatsApp හරහා සම්බන්ධ වන්න. ඔබේ ශ්‍රේණිය සහ විෂය මට්ටම තහවුරු කර ගැනීමෙන් අනතුරුව පන්ති කාලසටහන ලබා දෙනු ලැබේ.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>මාර්ගගත (Online) පන්ති ඇත්තේද?</span>
+                        <span class="faq-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer"><p>ඔව්, දිවයිනේ ඕනෑම ප්‍රදේශයක සිට සම්බන්ධ විය හැකි මාර්ගගත සජීවී පන්ති මෙන්ම, පටිගත පන්ති නැවත නැරඹීමේ පහසුවද ලබා දේ.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>ප්‍රශ්න පත්‍ර සහ පිළිතුරු සලකුණු කිරීම් තිබේද?</span>
+                        <span class="faq-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer"><p>සෑම ඒකකයක් අවසානයේම පසුගිය විභාග ප්‍රශ්න පත්‍ර මෙන්ම ආදර්ශ ප්‍රශ්න පත්‍රද විභාග ප්‍රමිතියට අනුව සලකුණු කර ප්‍රතිචාර ලබා දේ.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>ඉතිහාසයට දුර්වල සිසුන්ටද මෙය සුදුසුද?</span>
+                        <span class="faq-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                        </span>
+                    </div>
+                    <div class="faq-answer"><p>අනිවාර්යයෙන්ම. මතක තබා ගැනීමට පාඩම් කිරීම වෙනුවට තාර්කිකව වටහා ගැනීම මූලික කරගත් ඉගැන්වීම් ක්‍රමවේදය නිසා කිසිදු පෙර දැනුමක් අවශ්‍ය නොවේ.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="pt-40 pb-16 px-8 text-center border-t border-white/5 relative overflow-hidden">
+            <div class="marquee-outline mb-10" aria-hidden="true">
+                <div class="marquee-inner">
+                    <span class="outline-text">Legacy Defined ✦ Legacy Defined ✦ Legacy Defined ✦&nbsp;</span>
+                    <span class="outline-text">Legacy Defined ✦ Legacy Defined ✦ Legacy Defined ✦&nbsp;</span>
+                </div>
+                <div class="marquee-inner">
+                    <span class="outline-text">Legacy Defined ✦ Legacy Defined ✦ Legacy Defined ✦&nbsp;</span>
+                    <span class="outline-text">Legacy Defined ✦ Legacy Defined ✦ Legacy Defined ✦&nbsp;</span>
+                </div>
+            </div>
+            <h2 class="text-7xl md:text-[11rem] font-black serif italic mb-16 leading-none">
+                <span class="js-fold-text block" data-text="Legacy">Legacy</span>
+                <span class="js-fold-text block text-yellow-400" data-text="Defined.">Defined.</span>
+            </h2>
+            <a href="#home" class="btn-brand magnetic mb-24"><span class="shiny-text">Begin Your Journey</span></a>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 opacity-30 text-[10px] font-bold tracking-[0.5em] uppercase mt-24">
+                <span>&copy; 2026 SHEHAN BANDARA</span>
+                <span>MASTERCLASS ACADEMY</span>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const isTouch = window.matchMedia('(pointer: coarse)').matches;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        window.scrollTo(0, 0);
+
+        let lenis = null;
+        if (typeof Lenis !== 'undefined' && !reduceMotion) {
+            lenis = new Lenis({ duration: 1.15, smoothWheel: true });
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time) => lenis.raf(time * 1000));
+            gsap.ticker.lagSmoothing(0);
+        }
+
+        function scrollToTarget(target) {
+            if (lenis) {
+                lenis.scrollTo(target, { offset: 0, duration: 1.4 });
+            } else {
+                const el = typeof target === 'string' ? document.querySelector(target) : target;
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                else window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function initCursor() {
+            if (isTouch) return;
+            const dot = document.getElementById('cursor-dot');
+            const ring = document.getElementById('cursor-ring');
+            const pos = { x: -100, y: -100 };
+            document.addEventListener('mousemove', (e) => {
+                pos.x = e.clientX; pos.y = e.clientY;
+                gsap.to(dot, { x: pos.x, y: pos.y, xPercent: -50, yPercent: -50, duration: 0.08, ease: 'power2.out' });
+                gsap.to(ring, { x: pos.x, y: pos.y, xPercent: -50, yPercent: -50, duration: 0.35, ease: 'power2.out' });
+            });
+            document.addEventListener('mouseover', (e) => {
+                if (e.target.closest('a, button, [data-hover]')) ring.classList.add('is-hover');
+            });
+            document.addEventListener('mouseout', (e) => {
+                if (e.target.closest('a, button, [data-hover]')) ring.classList.remove('is-hover');
+            });
+        }
+
+        function scrambleText(el) {
+            if (el.dataset.scrambling === 'true') return;
+            el.dataset.scrambling = 'true';
+            const original = el.dataset.text || el.textContent;
+            el.dataset.text = original;
+            const chars = '!<>-_\\/[]{}—=+*^?#';
+            let frame = 0;
+            const totalFrames = 18;
+            const interval = setInterval(() => {
+                frame++;
+                const progress = frame / totalFrames;
+                let output = '';
+                for (let i = 0; i < original.length; i++) {
+                    if (original[i] === ' ') { output += ' '; continue; }
+                    output += (i / original.length < progress) ? original[i] : chars[Math.floor(Math.random() * chars.length)];
+                }
+                el.textContent = output;
+                if (frame >= totalFrames) {
+                    clearInterval(interval);
+                    el.textContent = original;
+                    el.dataset.scrambling = 'false';
+                }
+            }, 28);
+        }
+
+        function initScrambles() {
+            document.querySelectorAll('[data-scramble]').forEach(el => {
+                el.addEventListener('mouseenter', () => scrambleText(el));
+            });
+            const badge = document.getElementById('hero-badge');
+            if (badge) badge.addEventListener('mouseenter', () => scrambleText(badge));
+        }
+
+        function initMagnetic() {
+            if (isTouch) return;
+            document.querySelectorAll('.magnetic').forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const relX = e.clientX - rect.left - rect.width / 2;
+                    const relY = e.clientY - rect.top - rect.height / 2;
+                    gsap.to(btn, { x: relX * 0.35, y: relY * 0.35, duration: 0.4, ease: 'power2.out' });
+                });
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' });
+                });
+            });
+        }
+
+        function initTilt() {
+            if (isTouch) return;
+            document.querySelectorAll('.tilt-wrap').forEach(wrap => {
+                const card = wrap.querySelector('.tilt-card') || wrap;
+                wrap.addEventListener('mousemove', (e) => {
+                    const rect = wrap.getBoundingClientRect();
+                    const px = (e.clientX - rect.left) / rect.width;
+                    const py = (e.clientY - rect.top) / rect.height;
+                    const rotY = (px - 0.5) * 14;
+                    const rotX = (0.5 - py) * 14;
+                    card.style.setProperty('--gx', (px * 100) + '%');
+                    card.style.setProperty('--gy', (py * 100) + '%');
+                    gsap.to(card, { rotateX: rotX, rotateY: rotY, transformPerspective: 900, duration: 0.4, ease: 'power2.out' });
+                });
+                wrap.addEventListener('mouseleave', () => {
+                    gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.8, ease: 'elastic.out(1, 0.5)' });
+                });
+            });
+        }
+
+        function initSparks() {
+            if (isTouch || reduceMotion) return;
+            document.addEventListener('pointerdown', (e) => {
+                for (let i = 0; i < 8; i++) {
+                    const s = document.createElement('span');
+                    const size = Math.random() * 4 + 3;
+                    s.style.cssText = `position:fixed;left:${e.clientX}px;top:${e.clientY}px;width:${size}px;height:${size}px;border-radius:50%;background:${Math.random() > 0.5 ? '#facc15' : '#fde047'};pointer-events:none;z-index:9800;`;
+                    document.body.appendChild(s);
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 36 + Math.random() * 46;
+                    gsap.to(s, { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist, opacity: 0, scale: 0.2, duration: 0.55 + Math.random() * 0.35, ease: 'power2.out', onComplete: () => s.remove() });
+                }
+            });
+        }
+
+        function initEmbers() {
+            if (isTouch || reduceMotion) return;
+            const canvas = document.getElementById('embers');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let W, H, particles;
+
+            function resize() {
+                W = canvas.width = canvas.offsetWidth;
+                H = canvas.height = canvas.offsetHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const COUNT = Math.min(70, Math.floor(W / 18));
+            particles = Array.from({ length: COUNT }, () => ({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                r: Math.random() * 2.2 + 0.4,
+                speed: Math.random() * 0.6 + 0.15,
+                drift: (Math.random() - 0.5) * 0.4,
+                alpha: Math.random() * 0.5 + 0.1,
+                flicker: Math.random() * 0.05
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, W, H);
+                particles.forEach(p => {
+                    p.y -= p.speed;
+                    p.x += p.drift + Math.sin(p.y * 0.01) * 0.2;
+                    p.alpha += (Math.random() - 0.5) * p.flicker;
+                    if (p.alpha < 0.05) p.alpha = 0.05;
+                    if (p.alpha > 0.6) p.alpha = 0.6;
+                    if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(250, 204, 21, ${p.alpha})`;
+                    ctx.shadowColor = 'rgba(250, 204, 21, 0.8)';
+                    ctx.shadowBlur = 6;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function initProgressBar() {
+            gsap.to('#progress-bar', {
+                scaleX: 1, ease: 'none',
+                scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+            });
+        }
+
+        function initBackTop() {
+            const btn = document.getElementById('back-top');
+            ScrollTrigger.create({
+                start: 600,
+                onToggle: (self) => btn.classList.toggle('visible', self.isActive)
+            });
+            btn.addEventListener('click', () => scrollToTarget(0));
+        }
+
+        function initSideDots() {
+            const dots = document.querySelectorAll('.side-dot');
+            ['home', 'timeline', 'stats', 'curriculum', 'about', 'faq'].forEach((id, i) => {
+                const section = document.getElementById(id);
+                if (!section || !dots[i]) return;
+                ScrollTrigger.create({
+                    trigger: section, start: 'top center', end: 'bottom center',
+                    onToggle: (self) => { if (self.isActive) { dots.forEach(d => d.classList.remove('active')); dots[i].classList.add('active'); } }
+                });
+            });
+        }
+
+        function initMenu() {
+            const trigger = document.getElementById('menu-trigger');
+            const panel = document.getElementById('staggered-menu-panel');
+            const preLayers = Array.from(document.querySelectorAll('.sm-prelayer'));
+            const icon = document.getElementById('btn-icon');
+            const plusV = document.getElementById('btn-plus-v');
+            const textInner = document.getElementById('btn-text-inner');
+            if (!trigger || !panel) return;
+
+            let isOpen = false;
+            let openTl = null;
+            let closeTween = null;
+            let spinTween = null;
+            let textTween = null;
+
+            const OFF = 100;
+            gsap.set([panel, ...preLayers], { xPercent: OFF });
+            if (plusV) gsap.set(plusV, { rotate: 90, transformOrigin: '50% 50%' });
+
+            function buildOpenTimeline() {
+                if (openTl) openTl.kill();
+                if (closeTween) { closeTween.kill(); closeTween = null; }
+
+                const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
+                const numberEls = Array.from(panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'));
+                const socialTitle = panel.querySelector('.sm-socials-title');
+                const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link'));
+
+                gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+                gsap.set(numberEls, { '--sm-num-opacity': 0 });
+                if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
+                gsap.set(socialLinks, { y: 25, opacity: 0 });
+
+                const tl = gsap.timeline({ paused: true });
+                preLayers.forEach((el, i) => {
+                    tl.fromTo(el, { xPercent: OFF }, { xPercent: 0, duration: 0.5, ease: 'power4.out' }, i * 0.07);
+                });
+                const lastTime = preLayers.length ? (preLayers.length - 1) * 0.07 : 0;
+                const insertTime = lastTime + (preLayers.length ? 0.08 : 0);
+                tl.fromTo(panel, { xPercent: OFF }, { xPercent: 0, duration: 0.65, ease: 'power4.out' }, insertTime);
+
+                if (itemEls.length) {
+                    const itemsStart = insertTime + 0.65 * 0.15;
+                    tl.to(itemEls, { yPercent: 0, rotate: 0, duration: 1, ease: 'power4.out', stagger: 0.1 }, itemsStart);
+                    if (numberEls.length) {
+                        tl.to(numberEls, { duration: 0.6, ease: 'power2.out', '--sm-num-opacity': 1, stagger: 0.08 }, itemsStart + 0.1);
+                    }
+                }
+
+                const socialsStart = insertTime + 0.65 * 0.4;
+                if (socialTitle) tl.to(socialTitle, { opacity: 1, duration: 0.5, ease: 'power2.out' }, socialsStart);
+                if (socialLinks.length) {
+                    tl.to(socialLinks, { y: 0, opacity: 1, duration: 0.55, ease: 'power3.out', stagger: 0.08 }, socialsStart + 0.04);
+                }
+                openTl = tl;
+                return tl;
+            }
+
+            function playOpen() {
+                const tl = buildOpenTimeline();
+                if (tl) tl.play(0);
+            }
+
+            function playClose() {
+                if (openTl) { openTl.kill(); openTl = null; }
+                const all = [...preLayers, panel];
+                if (closeTween) closeTween.kill();
+                closeTween = gsap.to(all, {
+                    xPercent: OFF, duration: 0.32, ease: 'power3.in', overwrite: 'auto',
+                    onComplete: () => {
+                        gsap.set(panel.querySelectorAll('.sm-panel-itemLabel'), { yPercent: 140, rotate: 10 });
+                        gsap.set(panel.querySelectorAll('.sm-panel-item'), { '--sm-num-opacity': 0 });
+                        const st = panel.querySelector('.sm-socials-title');
+                        if (st) gsap.set(st, { opacity: 0 });
+                        gsap.set(panel.querySelectorAll('.sm-socials-link'), { y: 25, opacity: 0 });
+                    }
+                });
+            }
+
+            function animateIcon(opening) {
+                if (!icon) return;
+                if (spinTween) spinTween.kill();
+                spinTween = opening
+                    ? gsap.to(icon, { rotate: 225, duration: 0.8, ease: 'power4.out', overwrite: 'auto' })
+                    : gsap.to(icon, { rotate: 0, duration: 0.35, ease: 'power3.inOut', overwrite: 'auto' });
+            }
+
+            function animateText(opening) {
+                if (!textInner) return;
+                if (textTween) textTween.kill();
+                const target = opening ? 'Close' : 'Menu';
+                const seq = [opening ? 'Menu' : 'Close'];
+                let last = seq[0];
+                for (let i = 0; i < 3; i++) {
+                    last = last === 'Menu' ? 'Close' : 'Menu';
+                    seq.push(last);
+                }
+                if (last !== target) seq.push(target);
+                seq.push(target);
+                textInner.innerHTML = seq.map(l => '<span class="sm-toggle-line">' + l + '</span>').join('');
+                gsap.set(textInner, { yPercent: 0 });
+                const shift = ((seq.length - 1) / seq.length) * 100;
+                textTween = gsap.to(textInner, { yPercent: -shift, duration: 0.5 + seq.length * 0.07, ease: 'power4.out' });
+            }
+
+            function lockScroll(lock) {
+                document.body.style.overflow = lock ? 'hidden' : '';
+                if (lenis) { if (lock) lenis.stop(); else lenis.start(); }
+            }
+
+            function syncAria() {
+                trigger.setAttribute('aria-expanded', String(isOpen));
+                trigger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+                panel.setAttribute('aria-hidden', String(!isOpen));
+            }
+
+            function toggleMenu() {
+                isOpen = !isOpen;
+                syncAria();
+                if (isOpen) { playOpen(); lockScroll(true); } else playClose();
+                animateIcon(isOpen);
+                animateText(isOpen);
+            }
+
+            function closeMenu() {
+                if (!isOpen) return;
+                isOpen = false;
+                syncAria();
+                playClose();
+                lockScroll(false);
+                animateIcon(false);
+                animateText(false);
+            }
+
+            trigger.addEventListener('click', (e) => { e.preventDefault(); toggleMenu(); });
+
+            document.addEventListener('mousedown', (e) => {
+                if (isOpen && !panel.contains(e.target) && !trigger.contains(e.target)) closeMenu();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && isOpen) closeMenu();
+            });
+
+            panel.querySelectorAll('.sm-panel-item').forEach(link => {
+                link.addEventListener('click', () => {
+                    const href = link.getAttribute('href');
+                    closeMenu();
+                    if (href && href.startsWith('#') && href.length > 1 && document.querySelector(href)) {
+                        setTimeout(() => scrollToTarget(href), 450);
+                    }
+                });
+            });
+        }
+
+        function splitWords(el) {
+            const existing = el.querySelectorAll('.word');
+            if (existing.length) return existing;
+            const text = el.innerText;
+            el.innerHTML = '';
+            text.split(/(\s+)/).forEach(part => {
+                if (part.trim() === '') {
+                    el.appendChild(document.createTextNode(part));
+                } else {
+                    const span = document.createElement('span');
+                    span.className = 'word inline-block';
+                    span.innerText = part;
+                    el.appendChild(span);
+                }
+            });
+            return el.querySelectorAll('.word');
+        }
+
+        function initScrollReveal() {
+            document.querySelectorAll('.js-scroll-reveal').forEach(container => {
+                const targets = container.children.length ? Array.from(container.children) : [container];
+                targets.forEach(el => {
+                    const words = splitWords(el);
+                    gsap.fromTo(el, { transformOrigin: '0% 50%', rotate: 5 }, {
+                        ease: 'none', rotate: 0,
+                        scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom bottom', scrub: true }
+                    });
+                    if (words.length > 0) {
+                        gsap.fromTo(words, { opacity: 0, willChange: 'opacity' }, {
+                            ease: 'none', opacity: 1, stagger: 0.05,
+                            scrollTrigger: { trigger: el, start: 'top bottom-=20%', end: 'bottom bottom', scrub: true }
+                        });
+                        gsap.fromTo(words, { filter: 'blur(10px)' }, {
+                            ease: 'none', filter: 'blur(0px)', stagger: 0.05,
+                            scrollTrigger: { trigger: el, start: 'top bottom-=20%', end: 'bottom bottom', scrub: true }
+                        });
+                    }
+                });
+            });
+        }
+
+        function initFold() {
+            document.querySelectorAll('.js-fold-text').forEach(el => {
+                const text = el.getAttribute('data-text') || el.innerText;
+                el.innerHTML = '';
+                const segments = text.split('|');
+                segments.forEach((seg, si) => {
+                    Array.from(seg).forEach(char => {
+                        const span = document.createElement('span');
+                        span.className = 'fold-text-piece';
+                        span.innerText = char === ' ' ? '\u00A0' : char;
+                        el.appendChild(span);
+                    });
+                    if (si < segments.length - 1) el.appendChild(document.createElement('br'));
+                });
+                const pieces = el.querySelectorAll('.fold-text-piece');
+                gsap.fromTo(pieces, { opacity: 0, rotateX: -90, transformOrigin: '50% 0%' }, {
+                    opacity: 1, rotateX: 0, duration: 0.8, stagger: 0.05, ease: "power3.out",
+                    scrollTrigger: { trigger: el, start: 'top 88%' },
+                    onComplete: () => gsap.set(pieces, { clearProps: 'transform' })
+                });
+            });
+        }
+
+        function initBlur() {
+            const blur = document.getElementById('hero-blur');
+            if (!blur) return;
+            for (let i = 1; i <= 8; i++) {
+                const layer = document.createElement('div');
+                layer.style.position = 'absolute'; layer.style.inset = '0';
+                layer.style.backdropFilter = `blur(${i * 0.5}rem)`;
+                layer.style.webkitMaskImage = `linear-gradient(to bottom, transparent ${100 - i * 10}%, black)`;
+                blur.appendChild(layer);
+            }
+        }
+
+        function initCount() {
+            document.querySelectorAll('.js-count-up').forEach(el => {
+                const val = parseInt(el.getAttribute('data-value'));
+                const suf = el.getAttribute('data-suffix') || '';
+                const obj = { v: 0 };
+                gsap.to(obj, {
+                    v: val, duration: 2.2, ease: "power2.out",
+                    onUpdate: () => el.innerText = Math.floor(obj.v) + suf,
+                    scrollTrigger: { trigger: el, start: 'top 90%' }
+                });
+            });
+        }
+
+        function initImgReveals() {
+            document.querySelectorAll('.img-reveal').forEach(el => {
+                const img = el.querySelector('img');
+                const tl = gsap.timeline({
+                    scrollTrigger: { trigger: el, start: 'top 82%' }
+                });
+                tl.to(el, { clipPath: 'inset(0% 0 0% 0)', duration: 1.2, ease: 'power4.inOut' });
+                if (img) tl.to(img, { scale: 1, duration: 1.6, ease: 'power3.out' }, '-=1');
+            });
+        }
+
+        function initHorizontalTimeline() {
+            const section = document.getElementById('timeline');
+            const track = document.querySelector('.timeline-track');
+            const bar = document.getElementById('timeline-bar');
+            const items = gsap.utils.toArray('.timeline-item');
+            if (!section || !track) return;
+
+            const mm = gsap.matchMedia();
+            mm.add('(min-width: 768px)', () => {
+                const distance = () => track.scrollWidth - window.innerWidth;
+                const tween = gsap.to(track, {
+                    x: () => -distance(), ease: 'none',
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top top',
+                        end: () => '+=' + distance(),
+                        pin: true,
+                        scrub: 1,
+                        invalidateOnRefresh: true,
+                        onUpdate: (self) => { if (bar) bar.style.transform = `scaleX(${self.progress})`; }
+                    }
+                });
+                items.forEach((item) => {
+                    gsap.fromTo(item, { y: 70, opacity: 0 }, {
+                        y: 0, opacity: 1, duration: 0.9, ease: 'power3.out',
+                        scrollTrigger: { trigger: item, containerAnimation: tween, start: 'left 92%', toggleActions: 'play none none reverse' }
+                    });
+                });
+
+                const hTweens = [];
+                document.querySelectorAll('.js-scroll-reveal-h').forEach(el => {
+                    const words = splitWords(el);
+                    hTweens.push(gsap.fromTo(el, { transformOrigin: '0% 50%', rotate: 5 }, {
+                        ease: 'none', rotate: 0,
+                        scrollTrigger: { trigger: el, containerAnimation: tween, start: 'left 95%', end: 'left 55%', scrub: true }
+                    }));
+                    if (words.length) {
+                        hTweens.push(gsap.fromTo(words, { opacity: 0, willChange: 'opacity' }, {
+                            ease: 'none', opacity: 1, stagger: 0.05,
+                            scrollTrigger: { trigger: el, containerAnimation: tween, start: 'left 92%', end: 'left 45%', scrub: true }
+                        }));
+                        hTweens.push(gsap.fromTo(words, { filter: 'blur(10px)' }, {
+                            ease: 'none', filter: 'blur(0px)', stagger: 0.05,
+                            scrollTrigger: { trigger: el, containerAnimation: tween, start: 'left 92%', end: 'left 45%', scrub: true }
+                        }));
+                    }
+                });
+                return () => {
+                    if (tween.scrollTrigger) tween.scrollTrigger.kill();
+                    tween.kill();
+                    hTweens.forEach(t => { if (t.scrollTrigger) t.scrollTrigger.kill(); t.kill(); });
+                    gsap.set(track, { clearProps: 'x' });
+                    gsap.set(items, { clearProps: 'all' });
+                    const hEls = document.querySelectorAll('.js-scroll-reveal-h');
+                    gsap.set(hEls, { clearProps: 'all' });
+                    hEls.forEach(el => el.querySelectorAll('.word').forEach(w => w.style.cssText = ''));
+                };
+            });
+
+            mm.add('(max-width: 767px)', () => {
+                items.forEach((item, i) => {
+                    gsap.fromTo(item, { y: 50, opacity: 0 }, {
+                        y: 0, opacity: 1, duration: 0.8, delay: i * 0.08, ease: 'power3.out',
+                        scrollTrigger: { trigger: item, start: 'top 92%' }
+                    });
+                });
+
+                const hTweensM = [];
+                document.querySelectorAll('.js-scroll-reveal-h').forEach(el => {
+                    const words = splitWords(el);
+                    hTweensM.push(gsap.fromTo(el, { transformOrigin: '0% 50%', rotate: 5 }, {
+                        ease: 'none', rotate: 0,
+                        scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 45%', scrub: true }
+                    }));
+                    if (words.length) {
+                        hTweensM.push(gsap.fromTo(words, { opacity: 0, willChange: 'opacity' }, {
+                            ease: 'none', opacity: 1, stagger: 0.05,
+                            scrollTrigger: { trigger: el, start: 'top 92%', end: 'bottom 65%', scrub: true }
+                        }));
+                        hTweensM.push(gsap.fromTo(words, { filter: 'blur(10px)' }, {
+                            ease: 'none', filter: 'blur(0px)', stagger: 0.05,
+                            scrollTrigger: { trigger: el, start: 'top 92%', end: 'bottom 65%', scrub: true }
+                        }));
+                    }
+                });
+                return () => {
+                    hTweensM.forEach(t => { if (t.scrollTrigger) t.scrollTrigger.kill(); t.kill(); });
+                    const hEls = document.querySelectorAll('.js-scroll-reveal-h');
+                    gsap.set(hEls, { clearProps: 'all' });
+                    hEls.forEach(el => el.querySelectorAll('.word').forEach(w => w.style.cssText = ''));
+                };
+            });
+        }
+
+        function initVelocityMarquee() {
+            const inners = document.querySelectorAll('.marquee-band .marquee-inner');
+            if (!inners.length) return;
+            const tween = gsap.to(inners, { xPercent: -100, ease: 'none', duration: 24, repeat: -1 });
+            let decay = null;
+            ScrollTrigger.create({
+                onUpdate: (self) => {
+                    const boost = Math.min(Math.abs(self.getVelocity()) / 800, 3);
+                    tween.timeScale(1 + boost);
+                    clearTimeout(decay);
+                    decay = setTimeout(() => gsap.to(tween, { timeScale: 1, duration: 1, ease: 'power2.out' }), 150);
+                }
+            });
+        }
+
+        function initFaqSlide() {
+            gsap.utils.toArray('.faq-item').forEach((item, i) => {
+                gsap.fromTo(item, { opacity: 0, x: i % 2 === 0 ? -60 : 60 }, {
+                    opacity: 1, x: 0, duration: 1, ease: 'power3.out',
+                    scrollTrigger: { trigger: item, start: 'top 88%' }
+                });
+            });
+        }
+
+        function initHeroParallax() {
+            gsap.to('#hero-parallax-img', {
+                yPercent: 22, ease: 'none',
+                scrollTrigger: { trigger: '#home', start: 'top top', end: 'bottom top', scrub: true }
+            });
+            gsap.to('.hero-left', {
+                y: -90, opacity: 0.25, ease: 'none',
+                scrollTrigger: { trigger: '#home', start: 'top top', end: 'bottom top', scrub: true }
+            });
+        }
+
+        function initFaq() {
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.querySelector('.faq-question').addEventListener('click', () => {
+                    const wasActive = item.classList.contains('active');
+                    document.querySelectorAll('.faq-item.active').forEach(i => i.classList.remove('active'));
+                    if (!wasActive) item.classList.add('active');
+                    setTimeout(() => ScrollTrigger.refresh(), 550);
+                });
+            });
+        }
+
+        function initAnchors() {
+            document.querySelectorAll('a[href^="#"]').forEach(a => {
+                if (a.closest('.staggered-menu-panel')) return;
+                a.addEventListener('click', (e) => {
+                    const href = a.getAttribute('href');
+                    if (href.length > 1 && document.querySelector(href)) {
+                        e.preventDefault();
+                        scrollToTarget(href);
+                    }
+                });
+            });
+        }
+
+        function prepHeroIntro() {
+            gsap.set('#hero-badge', { opacity: 0, y: 24 });
+            gsap.set('.hero-btns > *', { opacity: 0, y: 30 });
+            gsap.set('#hero-parallax-img', { scale: 1.25 });
+            gsap.set('#scroll-indicator', { opacity: 0 });
+            const heroP = document.querySelector('.js-hero-words');
+            if (heroP) {
+                const words = splitWords(heroP);
+                gsap.set(words, { opacity: 0, y: 16, filter: 'blur(8px)' });
+                heroP._words = words;
+            }
+        }
+
+        function playHeroIntro() {
+            const tl = gsap.timeline();
+            tl.to('#hero-badge', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' })
+              .to('#hero-parallax-img', { scale: 1.1, duration: 1.8, ease: 'power3.out' }, 0.1)
+              .add(() => {
+                  const heroP = document.querySelector('.js-hero-words');
+                  if (heroP && heroP._words) {
+                      gsap.to(heroP._words, { opacity: 1, y: 0, filter: 'blur(0px)', stagger: 0.02, duration: 0.7, ease: 'power2.out' });
+                  }
+              }, 0.3)
+              .to('.hero-btns > *', { opacity: 1, y: 0, stagger: 0.12, duration: 0.7, ease: 'back.out(1.6)' }, 0.6)
+              .to('#scroll-indicator', { opacity: 1, duration: 0.8 }, 1);
+
+            gsap.utils.toArray('.reveal').forEach(el => {
+                gsap.to(el, { scrollTrigger: { trigger: el, start: "top 90%" }, opacity: 1, y: 0, duration: 1.2 });
+            });
+        }
+
+        initCursor();
+        initScrambles();
+        initMagnetic();
+        initTilt();
+        initSparks();
+        initEmbers();
+        initBlur();
+        initMenu();
+        initFaq();
+        initAnchors();
+        prepHeroIntro();
+
+        playHeroIntro();
+
+        window.addEventListener('load', () => {
+            initProgressBar();
+            initBackTop();
+            initSideDots();
+            initScrollReveal();
+            initFold();
+            initCount();
+            initImgReveals();
+            initHorizontalTimeline();
+            initVelocityMarquee();
+            initFaqSlide();
+            initHeroParallax();
+            ScrollTrigger.refresh();
+        });
+    </script>
+</body>
+</html>
